@@ -1,0 +1,149 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+// the function takes the plaintext and keyword then make the vigenere cipher for the plaintext.
+string vigenereEncrypt(){
+    string plaintExt, Keyword;
+    cout << "Enter the plaintext: \n";
+    getline(cin,plaintExt);
+    while (true) {
+        if (plaintExt.size() > 80) {
+            cout << "the plaintext length must be less than 80. "
+                    "please, try again\n";
+            getline(cin, plaintExt);
+            continue;
+        }
+        break;
+    }
+    //convert the plaintext to uppercase
+    transform(plaintExt.begin(), plaintExt.end(), plaintExt.begin(), ::toupper);
+    bool validKeyword = false;
+    while (!validKeyword) {
+        cout << "Enter the keyword: " << endl;
+        cin >> Keyword;
+
+        if (Keyword.size() > 8) {
+            cout << "The keyword length must be less than 8. Try again." << endl;
+        } else {
+            transform(Keyword.begin(), Keyword.end(), Keyword.begin(), ::toupper);
+            validKeyword = true; // Assume keyword is valid until proven otherwise
+            for (int i = 0; i < Keyword.size(); ++i) {
+                if (isspace(Keyword[i]) || isdigit(Keyword[i])) {
+                    validKeyword = false; // Set to false if space or digit found
+                    cout << "The keyword contains space or a digit. It's not allowed." << endl;
+                    break;
+                }
+            }
+        }
+    }
+    transform(Keyword.begin(), Keyword.end(), Keyword.begin(), ::toupper);
+    int k = 0;
+    string fixed_key;// ==>> it will store the fixed keyword in 'fixed_key' variable.
+    for (int i = 0; i < plaintExt.size(); i++) {
+        if (k == Keyword.size()) {// that condition checks if the index 'k' has reached the length of the keyword
+            k = 0;
+        }
+        fixed_key.push_back(Keyword[k]); //=>> push_back ==> for adding the letters in 'key' variable
+        k++;
+        if (plaintExt.size() == Keyword.size())
+            break;
+    }
+    string encrypted;
+    for (int i = 0; i < plaintExt.size(); ++i) {
+        if (plaintExt[i] == ' ' || isdigit(plaintExt[i])) {
+            encrypted += plaintExt[i];
+            continue;
+        }
+        int operation = ((plaintExt[i] + fixed_key[i]) % 26) + 65;
+        encrypted += (char) (operation);
+    }
+    cout << encrypted;
+}
+// the function takes the encrypted word and the keyword and then print the vigenere cipher.
+string vigenerDecrypte(){
+    string eNcrypted, Keyword;
+    cout << "Enter the encrypted word\n";
+    getline(cin,eNcrypted);
+    while (true) {
+        if (eNcrypted.size() > 80) {
+            cout << "the encrypted length must be less than 80. "
+                    "please, try again\n";
+            getline(cin, eNcrypted);
+            continue;
+        }
+        break;
+    }
+    transform(eNcrypted.begin(), eNcrypted.end(), eNcrypted.begin(), ::toupper);
+    bool validKeyword = false;
+    while (!validKeyword) {
+        cout << "Enter the keyword: " << endl;
+        cin >> Keyword;
+
+        if (Keyword.size() > 8) {
+            cout << "The keyword length must be less than 8. Try again." << endl;
+        } else {
+            transform(Keyword.begin(), Keyword.end(), Keyword.begin(), ::toupper);
+            validKeyword = true;
+            for (int i = 0; i < Keyword.size(); ++i) {
+                if (isspace(Keyword[i]) || isdigit(Keyword[i])) {
+                    validKeyword = false; // Set to false if space or digit found
+                    cout << "The keyword contains space or a digit. It's not allowed." << endl;
+                    break;
+                }
+            }
+        }
+    }
+    transform(Keyword.begin(), Keyword.end(), Keyword.begin(), ::toupper);
+
+    string fixed_key;
+    int k = 0;
+    for (int i = 0; i < eNcrypted.size(); i++) {
+        if (k == Keyword.size()) {// that condition checks if the index 'k' has reached the length of the keyword
+            k = 0;
+        }
+        fixed_key.push_back(Keyword[k]); //=>> push_back ==> for adding the letters in 'key' variable
+        k++;
+        if (eNcrypted.size() == Keyword.size())
+            break;
+    }
+    string deCrypted;
+    for (int i = 0; i < eNcrypted.size(); ++i) {
+        if (eNcrypted[i] == ' ' || isdigit(eNcrypted[i])) {
+            deCrypted += eNcrypted[i];
+            continue;
+        }
+        int operation = ((eNcrypted[i] - fixed_key[i] + 26) % 26) + 'A';
+        deCrypted += (char)(operation);
+    }
+    cout << "Decrypted text: " << deCrypted << endl;
+}
+
+int main(){
+    // the menu for the choices
+     char choice;
+     cout <<"choose:\n"
+            "A:Encryption\n"
+            "B:Decryption\n";
+     cin >> choice;
+     choice = toupper(choice);
+     while (true){
+         if (choice != 'A' && choice != 'B'){
+             cout <<"please, choose a valid option\n";
+             cin >>choice;
+             choice = toupper(choice);
+             continue;
+         }
+         break;
+     }
+     cin.ignore();
+     if (choice == 'A'){
+         vigenereEncrypt();
+
+     }
+     else{
+         vigenerDecrypte();
+     }
+    return 0;
+}
